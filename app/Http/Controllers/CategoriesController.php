@@ -16,6 +16,14 @@ class CategoriesController extends Controller
         return response()->json($merged);
     }
 
+    public function test(){
+        $res = [
+            'message' => "hello this is test"
+        ];
+
+        return response()->json($res);
+    }
+
     public function delete($id){
         $category = Category::where('id', $id)->where('userId', auth()->id())->first();
 
