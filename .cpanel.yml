@@ -1,5 +1,5 @@
 ---
 deployment:
 tasks:
-- export DEPLOYPATH=/home/usercpanel/public_html/git
+- export DEPLOYPATH=/home/usercpanel/public_html/apiweb.gofinance.my.id
 - /bin/cp -r * $DEPLOYPATH
