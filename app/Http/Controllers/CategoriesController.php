@@ -21,7 +21,7 @@ class CategoriesController extends Controller
             'message' => "hello this is test"
         ];
 
-        return response()->json($res);
+        return response()->json($res, 200);
     }
 
     public function delete($id){
@@ -59,7 +59,7 @@ class CategoriesController extends Controller
 
         //if validation fails
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json($validator->messages(), 422);
         }
 
         //create user
