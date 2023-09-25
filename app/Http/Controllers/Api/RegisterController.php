@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Category;
+use App\Models\Wallet;
 
 class RegisterController extends Controller
 {
@@ -34,6 +36,19 @@ class RegisterController extends Controller
 
         //return response JSON user is created
         if($user) {
+            $category = Category::create([
+                'name'  => "Food & Drinks",
+                'isDefault' => true,
+                'icon'  => "default",
+                'type'  => 0,
+                'userId' =>$user->id 
+            ]);
+            $wallet = Wallet::create([
+                'name'  => "Cash",
+                'isDefault' => true,
+                'balance' => 0,
+                'userId' =>$user->id 
+            ]);
             return response()->json([
                 'success' => true,
                 'user'    => $user,  
