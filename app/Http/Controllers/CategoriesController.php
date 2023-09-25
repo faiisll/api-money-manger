@@ -11,9 +11,10 @@ class CategoriesController extends Controller
     public function index(){
 
         $categories = Category::where('userId', auth()->id())->get()->toArray();
-        $defaultCategory = Category::where('isDefault', 1)->get()->toArray();
-        $merged = array_merge($defaultCategory, $categories);
-        return response()->json($merged);
+        return response()->json([
+            "data" =>$categories,
+            "message" => "Successfully get categories."
+        ], 200);
     }
 
     public function test(){
@@ -74,10 +75,22 @@ class CategoriesController extends Controller
         if($category) {
             return response()->json([
                 'success' => true,
-                'user'    => $category,  
+                'data'    => $category,  
             ], 201);
         }
 
+
+    }
+
+    public function getSingleCategory($id){
+        $category = Category::where('id', $id)->first();
+
+        if($category){
+            return $category;
+
+        }else{
+            return false;
+        }
 
     }
 }
