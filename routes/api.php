@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\WalletController;
 use App\Http\Controllers\ErrorController;
 
 /*
@@ -38,8 +39,16 @@ Route::group([
     'middleware' => 'auth:api'
 ], function ($router) {
     Route::get('/categories', [CategoriesController::class, 'index']);
+    Route::get('/category/{id}', [CategoriesController::class, 'getSingleCategory']);
     Route::post('/category', [CategoriesController::class, 'create']);
     Route::delete('/category/{id}', [CategoriesController::class, 'delete']);
+    Route::patch('/category/{id}', [CategoriesController::class, 'update']);
+
+    Route::get('/wallets', [WalletController::class, 'index']);
+    Route::get('/wallet/{id}', [WalletController::class, 'getSingleWallet']);
+    Route::post('/wallet', [WalletController::class, 'create']);
+    Route::delete('/wallet/{id}', [WalletController::class, 'delete']);
+    Route::patch('/wallet/{id}', [WalletController::class, 'update']);
 
 });
 

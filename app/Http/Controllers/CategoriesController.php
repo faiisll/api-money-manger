@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use Illuminate\Support\Facades\Validator;
@@ -9,44 +10,24 @@ use Illuminate\Support\Facades\Validator;
 class CategoriesController extends Controller
 {
     public function index(){
-
         $categories = Category::where('userId', auth()->id())->get()->toArray();
-        return response()->json([
-            "data" =>$categories,
-            "message" => "Successfully get categories."
-        ], 200);
+        return ResponseHelper::success($categories, "Successfully get categories.");
     }
 
     public function test(){
         $res = [
             'message' => "hello this is test"
         ];
-
         return response()->json($res, 200);
     }
 
     public function delete($id){
         $category = Category::where('id', $id)->where('userId', auth()->id())->first();
+        if($category === null) return ResponseHelper::failedNoData();
+        if($category->isDefault) return ResponseHelper::failedValidation("Failed, cannot delete default category");
 
-        // dd($category);
-        if($category === null){
-            
-            return response()->json([
-                "status" => false,
-                "message" => "Delete failed, data not found."
-    
-            ], 400);
-        }else{
-            $category->delete();
-            return response()->json([
-                "status" => true,
-                "message" => "Data has been deleted."
-    
-            ], 200);
-
-        }
-
-
+        $category->delete();
+        return ResponseHelper::success($category, "Successfully, data has been deleted.");
     }
 
     public function create(Request $request){
@@ -60,7 +41,8 @@ class CategoriesController extends Controller
 
         //if validation fails
         if ($validator->fails()) {
-            return response()->json($validator->messages(), 422);
+            $messages = $validator->messages();
+            return ResponseHelper::failedValidation($messages->first());
         }
 
         //create user
@@ -73,24 +55,47 @@ class CategoriesController extends Controller
 
         //return response JSON user is created
         if($category) {
-            return response()->json([
-                'success' => true,
-                'data'    => $category,  
-            ], 201);
+            return ResponseHelper::success($category, "Data has been added.");
         }
 
 
     }
 
-    public function getSingleCategory($id){
-        $category = Category::where('id', $id)->first();
+    public function update(Request $req, $id){
+        $category = Category::where('id', $id)->where('userId', auth()->id())->first();
+        $input = $req->all();
 
-        if($category){
-            return $category;
+        // dd($category);
+        if($category === null) return ResponseHelper::failedNoData();
+        
+        $validator = Validator::make($input, [
+            'name'  => 'string|min:3',
+            'icon'  => 'string',
+            'type'  => 'boolean',
+        ]);
 
-        }else{
-            return false;
+        //if validation fails
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+            return ResponseHelper::failedValidation($messages->first());
         }
+
+        $category->update([
+            'name' => array_key_exists('name', $input) ? $req->name : $category->name,
+            'icon' => array_key_exists('icon', $input) ? $req->icon : $category->icon,
+            'type' => array_key_exists('type', $input) ? $req->type : $category->type
+
+        ]);
+        
+        return ResponseHelper::success($category, "Data has been updated.");
+
+    }
+
+    public function getSingleCategory($id){
+        $category = Category::where('id', $id)->where('userId', auth()->id())->first();
+
+        if($category === null) return ResponseHelper::failedNoData();
+        return ResponseHelper::success($category);
 
     }
 }

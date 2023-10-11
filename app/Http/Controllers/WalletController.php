@@ -5,38 +5,25 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\ResponseHelper;
 
 class WalletController extends Controller
 {
     public function index(){
         $wallets = Wallet::where('userId', auth()->id())->get()->toArray();
-        return response()->json([
-            "data" =>$wallets,
-            "message" => "Successfully get categories."
-        ], 200);
+
+        return ResponseHelper::success($wallets, "Successfully get wallet.");
 
     }
 
     public function delete($id){
-        $category = Wallet::where('id', $id)->where('userId', auth()->id())->first();
+        $wallet = Wallet::where('id', $id)->where('userId', auth()->id())->first();
 
         // dd($category);
-        if($category === null){
-            
-            return response()->json([
-                "status" => false,
-                "message" => "Delete failed, data not found."
-    
-            ], 404);
-        }else{
-            $category->delete();
-            return response()->json([
-                "status" => true,
-                "message" => "Data has been deleted."
-    
-            ], 200);
+        if($wallet === null) return ResponseHelper::failedNoData();
 
-        }
+        $wallet->delete();
+        return ResponseHelper::success($wallet, "Data has been deleted.");
 
 
     }
@@ -50,36 +37,56 @@ class WalletController extends Controller
 
         //if validation fails
         if ($validator->fails()) {
-            return response()->json($validator->messages(), 422);
+            $messages = $validator->messages();
+            return ResponseHelper::failedValidation($messages->first());
         }
 
         //create user
-        $category = Wallet::create([
+        $wallet = Wallet::create([
             'name'  => $request->name,
             'balance'  => $request->balance,
             'userId' => auth()->id() 
         ]);
 
         //return response JSON user is created
-        if($category) {
-            return response()->json([
-                'success' => true,
-                'data'    => $category,  
-            ], 201);
+        if($wallet) return ResponseHelper::success($wallet, "Data has been added.");
+
+
+    }
+
+    public function update(Request $req, $id){
+        $input = $req->all();
+        
+        $validator = Validator::make($input, [
+            'name' => 'min:1',
+            'balance' => 'numeric'
+        ]);
+
+        //if validation fails
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+            return ResponseHelper::failedValidation($messages->first());
         }
+        //get wallet by ID
+        $wallet = Wallet::where('id', $id)->where('userId', auth()->id())->first();
+
+        if($wallet === null) return ResponseHelper::failedNoData();
+
+
+        $wallet->update([
+            'name' =>  array_key_exists("name", $input) ? $req->name : $wallet->name,
+            'balance' => array_key_exists("balance", $input) ? $req->balance : $wallet->balance,
+        ]);
+
+        if($wallet) return ResponseHelper::success($wallet, "Data has been updated.");
 
 
     }
 
     public function getSingleWallet($id){
-        $wallet = Wallet::where('id', $id)->first();
+        $wallet = Wallet::where('id', $id)->where('userId', auth()->id())->first();
+        if($wallet === null) return ResponseHelper::failedNoData();
 
-        if($wallet){
-            return $wallet;
-
-        }else{
-            return false;
-        }
-
+        if($wallet) return ResponseHelper::success($wallet);
     }
 }
