@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ErrorController;
 
 /*
@@ -30,7 +31,7 @@ Route::group([
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('me', [AuthController::class, 'me']);
+    Route::get('me', [AuthController::class, 'me']);
     Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
 
 });
@@ -49,10 +50,18 @@ Route::group([
     Route::post('/wallet', [WalletController::class, 'create']);
     Route::delete('/wallet/{id}', [WalletController::class, 'delete']);
     Route::patch('/wallet/{id}', [WalletController::class, 'update']);
+    Route::get('/wallet/{id}/transactions', [WalletController::class, 'getTransactions']);
+    
+    Route::get('/transactions', [TransactionController::class, 'index']);
+    Route::get('/transaction/{id}', [TransactionController::class, 'getById']);
+    Route::delete('/transaction/{id}', [TransactionController::class, 'delete']);
+    Route::patch('/transaction/{id}', [TransactionController::class, 'update']);
+    Route::post('/transaction', [TransactionController::class, 'create']);
 
 });
 
 Route::get('/tes', [CategoriesController::class, 'test']);
+Route::get('/tes2', [TransactionController::class, 'index']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

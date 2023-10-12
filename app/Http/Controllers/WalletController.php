@@ -6,21 +6,23 @@ use Illuminate\Http\Request;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\ResponseHelper;
+use App\Models\Transaction;
 
 class WalletController extends Controller
 {
     public function index(){
-        $wallets = Wallet::where('userId', auth()->id())->get()->toArray();
+        $wallets = Wallet::where('userId', auth()->id())->paginate(1000);
 
         return ResponseHelper::success($wallets, "Successfully get wallet.");
 
     }
 
     public function delete($id){
-        $wallet = Wallet::where('id', $id)->where('userId', auth()->id())->first();
-
+        $wallet = Wallet::where('userId', auth()->id())->where('id', $id)->first();
         // dd($category);
         if($wallet === null) return ResponseHelper::failedNoData();
+        if($wallet->isDefault) return ResponseHelper::failedValidation("Failed, cannot delete default wallet");
+
 
         $wallet->delete();
         return ResponseHelper::success($wallet, "Data has been deleted.");
@@ -44,7 +46,7 @@ class WalletController extends Controller
         //create user
         $wallet = Wallet::create([
             'name'  => $request->name,
-            'balance'  => $request->balance,
+            'balance'  => $request->balance ? $request->balance : 0,
             'userId' => auth()->id() 
         ]);
 
@@ -88,5 +90,15 @@ class WalletController extends Controller
         if($wallet === null) return ResponseHelper::failedNoData();
 
         if($wallet) return ResponseHelper::success($wallet);
+    }
+
+    public function getTransactions($id){
+        $wallet = Wallet::where('id', $id)->where('userId', auth()->id())->first();
+        if($wallet === null) return ResponseHelper::failedNoData();
+
+
+        $transactions = Transaction::where('walletId', $id)->paginate(20);
+        if($transactions) return ResponseHelper::success($transactions);
+
     }
 }

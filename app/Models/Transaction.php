@@ -12,7 +12,7 @@ class Transaction extends Model
     use HasFactory;
 
     protected $table = 'transactions';
-    protected $fillable = ['name', 'desc', 'walletId', 'categoryId', 'date', 'amount'];
+    protected $fillable = ['name', 'desc', 'walletId', 'categoryId', 'date', 'amount' , 'userId'];
 
     function wallet()
     {

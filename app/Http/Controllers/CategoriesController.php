@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 class CategoriesController extends Controller
 {
     public function index(){
-        $categories = Category::where('userId', auth()->id())->get()->toArray();
+        $categories = Category::where('userId', auth()->id())->paginate(1000);
         return ResponseHelper::success($categories, "Successfully get categories.");
     }
 
@@ -34,9 +34,7 @@ class CategoriesController extends Controller
         $input = $request->all();
         
         $validator = Validator::make($input, [
-            'name'      => 'required',
-            'icon'     => 'required',
-            'type'  => 'required',
+            'name' => 'required',
         ]);
 
         //if validation fails
@@ -48,8 +46,8 @@ class CategoriesController extends Controller
         //create user
         $category = Category::create([
             'name'  => $request->name,
-            'icon'  => $request->icon,
-            'type'  => $request->type,
+            'icon'  => $request->icon ? $request->icon : 'default',
+            'type'  => $request->type ? $request->type : 0,
             'userId' => auth()->id() 
         ]);
 

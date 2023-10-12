@@ -17,10 +17,10 @@ class ResponseHelper {
             'message' => $message,
         ], 422);
     }
-    public static function failedNoData(){
+    public static function failedNoData($message = "Data not found!"){
         return response()->json([
             'status' => false,
-            'message' => "Data not found!",
+            'message' => $message,
         ], 404);
     }
 }
