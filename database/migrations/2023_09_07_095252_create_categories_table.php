@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->string("icon");
+            $table->string("variant")->nullable()->default("primary");
             $table->boolean("type")->default(1);
             $table->boolean("isDefault")->default(false);
             $table->unsignedBigInteger("userId")->nullable();

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Category;
 use App\Models\Wallet;
+use App\Helpers\ResponseHelper;
 
 class RegisterController extends Controller
 {
@@ -24,7 +25,9 @@ class RegisterController extends Controller
 
          //if validation fails
          if ($validator->fails()) {
-            return response()->json($validator->messages(), 422);
+            $messages = $validator->messages();
+            return ResponseHelper::failedValidation($messages->first());
+            // return response()->json($validator->messages(), 422);
         }
 
         //create user

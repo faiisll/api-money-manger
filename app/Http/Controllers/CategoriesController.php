@@ -35,6 +35,9 @@ class CategoriesController extends Controller
         
         $validator = Validator::make($input, [
             'name' => 'required',
+            'icon'  => 'string',
+            'variant'  => 'string',
+            'type'  => 'boolean',
         ]);
 
         //if validation fails
@@ -48,6 +51,7 @@ class CategoriesController extends Controller
             'name'  => $request->name,
             'icon'  => $request->icon ? $request->icon : 'default',
             'type'  => $request->type ? $request->type : 0,
+            'variant' => $request->variant ? $request->variant : 'primary',
             'userId' => auth()->id() 
         ]);
 
@@ -69,6 +73,7 @@ class CategoriesController extends Controller
         $validator = Validator::make($input, [
             'name'  => 'string|min:3',
             'icon'  => 'string',
+            'variant'  => 'string',
             'type'  => 'boolean',
         ]);
 
@@ -81,7 +86,8 @@ class CategoriesController extends Controller
         $category->update([
             'name' => array_key_exists('name', $input) ? $req->name : $category->name,
             'icon' => array_key_exists('icon', $input) ? $req->icon : $category->icon,
-            'type' => array_key_exists('type', $input) ? $req->type : $category->type
+            'type' => array_key_exists('type', $input) ? $req->type : $category->type,
+            'variant' => array_key_exists('variant', $input) ? $req->variant : $category->variant,
 
         ]);
         
