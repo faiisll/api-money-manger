@@ -52,6 +52,7 @@ class CategoriesController extends Controller
             'icon'  => $request->icon ? $request->icon : 'default',
             'type'  => $request->type ? $request->type : 0,
             'variant' => $request->variant ? $request->variant : 'primary',
+            'isDefault' => "0",
             'userId' => auth()->id() 
         ]);
 

@@ -12,7 +12,7 @@ class Category extends Model
     use HasFactory;
 
     protected $table = 'categories';
-    protected $fillable = ['isDefault', 'userId', 'name', 'type', 'color', 'icon'];
+    protected $fillable = ['isDefault', 'userId', 'name', 'type', 'variant', 'icon'];
 
     function user()
     {
