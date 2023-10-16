@@ -38,14 +38,26 @@ class TransactionController extends Controller
 
 
         $transactions = $query->where('userId', $userId)->orderBy('date')->paginate($limit);
+        $result = $transactions->toArray();
 
         if($params['groupBy'] === 'date'){
-            $transactions = $transactions->groupBy('date');
+            $result = $transactions->groupBy('date')->map(function($item){
+                // return $item-;
+                return [
+                    'date' => $item->first()->date,
+                    'totalAmount' => $item->sum('amount'),
+                    'transactions' => $item
+                ];
+    
+            })->values();
+            
+             
         }
-        $arr_trasact = $transactions->toArray();
+        
+        
 
 
-        return ResponseHelper::success($arr_trasact);
+        return ResponseHelper::success($result);
         // return dd($arr_trasact);
 
         

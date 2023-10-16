@@ -12,6 +12,8 @@ class WalletController extends Controller
 {
     public function index(){
         $wallets = Wallet::where('userId', auth()->id())->paginate(1000);
+        $hidden = $wallets->makeHidden('transactions');
+        $wallets->paginate = $hidden;
 
         return ResponseHelper::success($wallets, "Successfully get wallet.");
 
